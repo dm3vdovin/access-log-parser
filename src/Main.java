@@ -4,7 +4,6 @@ import java.util.Scanner;
 public class Main {
     public static void main(String[] args) {
         int filesCount = 1;
-
         while(true) {
             String path = new Scanner(System.in).nextLine();
 
@@ -21,6 +20,5 @@ public class Main {
                 filesCount++;
             }
         }
-
     }
 }
