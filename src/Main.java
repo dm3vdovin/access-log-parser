@@ -43,17 +43,7 @@ public class Main {
                         throw new ExceedMaxLengthException("В файле встретилась строка длиннее " + lineLengthLimit + " символов");
                     }
 
-                    Pattern regexPattern = Pattern.compile(
-                            "(?<ipAdress>\\d+.\\d+.\\d+.\\d+) " +
-                                    "(?<property1>.*?) " +
-                                    "(?<property2>.*?) " +
-                                    "(?<timeStamp>.*?) " +
-                                    "(?<requestMethod>.*) " +
-                                    "(?<responseCode>\\d+?) " +
-                                    "(?<dataSize>\\d+?) " +
-                                    "(?<pageUrl>.*?) " +
-                                    "(?<userAgent>.*?)");
-
+                    Pattern regexPattern = LogEntry.regexPattern;
                     Matcher userAgentMatcher = regexPattern.matcher(line);
 
                     if (userAgentMatcher.matches()) {
@@ -76,11 +66,19 @@ public class Main {
                                 botTotalCountGoogle++;
                             }
                         }
-
                     }
 
                     totalLinesCount++;
 
+                    Statistics statistics = new Statistics();
+                    LogEntry logEntry = new LogEntry(line);
+                    String userAgentString = logEntry.getUserAgent();
+                    UserAgent userAgent = new UserAgent(userAgentString);
+                    System.out.println(userAgent.getOsName());
+                    System.out.println(userAgent.getBrowserName());
+                    statistics.addEntry(logEntry);
+                    statistics.addEntry(logEntry);
+                    System.out.println("Пропускная способность: " + statistics.getTrafficRate());
                 }
 
                 System.out.println("Общее количество строк в файле: " + totalLinesCount);
