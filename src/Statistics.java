@@ -6,8 +6,8 @@ import java.util.HashSet;
 public class Statistics {
     private long totalTraffic;
     private LocalDateTime minTime, maxTime;
-    private HashSet<String> pageLinks;
-    private HashMap<String, Integer> oSLoggingFrequency;
+    private final HashSet<String> pageLinks;
+    private final HashMap<String, Integer> oSLoggingFrequency;
     int successCode = 200;
     private int osCount = 0;
 
@@ -70,7 +70,7 @@ public class Statistics {
 
         for (String key : oSLoggingFrequency.keySet()) {
             osCount += oSLoggingFrequency.get(key);
-            double value = oSLoggingFrequency.get(key) / osCount;
+            double value = (double) oSLoggingFrequency.get(key) / osCount;
             oSLoggingFrequencyRate.put(key, value);
         }
 

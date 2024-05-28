@@ -10,7 +10,7 @@ public class UserAgent {
         this.browserName = getBrowserName(userAgent);
     }
 
-    public static String getOsName(String userAgent) {
+    public String getOsName(String userAgent) {
         if (userAgent.contains("Windows")) {
             return OperatingSystem.WINDOWS.name;
         } else if (userAgent.contains("Linux")) {
@@ -22,7 +22,7 @@ public class UserAgent {
         }
     }
 
-    public static String getBrowserName(String userAgent) {
+    public String getBrowserName(String userAgent) {
         if (userAgent.contains("Edge")) {
             return Browser.EDGE.name;
         } else if (userAgent.contains("Firefox")) {
