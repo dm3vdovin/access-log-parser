@@ -36,6 +36,9 @@ public class Main {
                 BufferedReader reader = new BufferedReader(fileReader);
                 String line;
 
+                Statistics statistics = null;
+                LogEntry logEntry;
+
                 while ((line = reader.readLine()) != null) {
                     int length = line.length();
 
@@ -70,17 +73,12 @@ public class Main {
 
                     totalLinesCount++;
 
-                    Statistics statistics = new Statistics();
-                    LogEntry logEntry = new LogEntry(line);
-                    String userAgentString = logEntry.getUserAgent();
-                    UserAgent userAgent = new UserAgent(userAgentString);
-                    System.out.println(userAgent.getOsName());
-                    System.out.println(userAgent.getBrowserName());
+                    statistics = new Statistics();
+                    logEntry = new LogEntry(line);
                     statistics.addEntry(logEntry);
-                    statistics.addEntry(logEntry);
-                    System.out.println("Пропускная способность: " + statistics.getTrafficRate());
                 }
 
+                System.out.println("Пропускная способность: " + statistics.getTrafficRate());
                 System.out.println("Общее количество строк в файле: " + totalLinesCount);
                 DecimalFormat formatter = new DecimalFormat("#0.00");
                 double botYandexContribution = (double) botTotalCountYandex / totalLinesCount * 100;

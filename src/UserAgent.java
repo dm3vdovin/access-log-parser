@@ -1,7 +1,7 @@
 public class UserAgent {
     final String userAgent;
-    final Enum<OperatingSystem> osName;
-    final Enum<Browser> browserName;
+    final String osName;
+    final String browserName;
 
 
     public UserAgent(String userAgent) {
@@ -10,31 +10,31 @@ public class UserAgent {
         this.browserName = getBrowserName(userAgent);
     }
 
-    private Enum<OperatingSystem> getOsName(String userAgent) {
+    public static String getOsName(String userAgent) {
         if (userAgent.contains("Windows")) {
-            return OperatingSystem.WINDOWS;
+            return OperatingSystem.WINDOWS.name;
         } else if (userAgent.contains("Linux")) {
-            return OperatingSystem.LINUX;
+            return OperatingSystem.LINUX.name;
         } else if (userAgent.contains("Mac OS")) {
-            return OperatingSystem.MACOS;
+            return OperatingSystem.MACOS.name;
         } else {
-            return OperatingSystem.OTHER;
+            return OperatingSystem.OTHER.name;
         }
     }
 
-    private Enum<Browser> getBrowserName(String userAgent) {
+    public static String getBrowserName(String userAgent) {
         if (userAgent.contains("Edge")) {
-            return Browser.EDGE;
+            return Browser.EDGE.name;
         } else if (userAgent.contains("Firefox")) {
-            return Browser.FIREFOX;
+            return Browser.FIREFOX.name;
         } else if (userAgent.contains("Chrome")) {
-            return Browser.CHROME;
+            return Browser.CHROME.name;
         } else if (userAgent.contains("Opera")) {
-            return Browser.OPERA;
+            return Browser.OPERA.name;
         } else if (userAgent.contains("Safari")) {
-            return Browser.SAFARI;
+            return Browser.SAFARI.name;
         } else {
-            return Browser.OTHER;
+            return Browser.OTHER.name;
         }
     }
 
@@ -46,7 +46,7 @@ public class UserAgent {
         SAFARI("Safari"),
         OTHER("Other");
 
-        private final String name;
+        public final String name;
 
         Browser(String name) {
             this.name = name;
@@ -59,18 +59,10 @@ public class UserAgent {
         MACOS("Mac OS X"),
         OTHER("Other");
 
-        private final String name;
+        public final String name;
 
         OperatingSystem(String name) {
             this.name = name;
         }
-    }
-
-    public Enum<OperatingSystem> getOsName() {
-        return osName;
-    }
-
-    public Enum<Browser> getBrowserName() {
-        return browserName;
     }
 }
