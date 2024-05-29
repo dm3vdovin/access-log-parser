@@ -4,6 +4,7 @@ import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+
 public class LogEntry {
     final String ipAddress;
     final LocalDateTime timeStamp;
@@ -13,13 +14,13 @@ public class LogEntry {
     final long dataSize;
     final String referer;
     final String userAgent;
-    final static Pattern regexPattern = Pattern.compile(
+    public static Pattern regexPattern = Pattern.compile(
             "(?<ipAddress>\\d+.\\d+.\\d+.\\d+) " +
                     "(?<property1>.*?) " +
                     "(?<property2>.*?) \\[" +
                     "(?<timeStamp>.*?)] \"" +
                     "(?<requestMethod>.*) " +
-                    "(?<requestPath>/.*?) " +
+                    "(?<requestPath>/.*?) HTTP/\\d+.\\d+\" " +
                     "(?<responseCode>\\d+?) " +
                     "(?<dataSize>\\d+?) " +
                     "(?<referer>.*?) " +
@@ -40,7 +41,6 @@ public class LogEntry {
         } else {
             throw new IllegalArgumentException("Строка имеет неверный формат: " + line);
         }
-
     }
 
     public String getIpAddress() {
