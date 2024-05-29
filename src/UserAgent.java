@@ -65,4 +65,16 @@ public class UserAgent {
             this.name = name;
         }
     }
+
+    public boolean isBotRequest(String userAgentString) {
+        boolean isBotRequest = false;
+        String missingPropertyAttribute = "-";
+        String botAttribute = "bot";
+
+        if (!userAgentString.equals(missingPropertyAttribute) && userAgentString.contains(botAttribute)) {
+            isBotRequest = true;
+        }
+
+        return isBotRequest;
+    }
 }

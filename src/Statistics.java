@@ -1,9 +1,9 @@
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.Month;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
+import java.util.*;
 import java.util.stream.Stream;
 
 
@@ -14,12 +14,12 @@ public class Statistics {
     public HashSet<String> nonExistingPageLinks;
     public HashMap<String, Integer> oSLoggingFrequency;
     public HashMap<String, Integer> browserLoggingFrequency;
+    public HashMap<LocalDateTime, Integer> loggingFrequency;
+    HashMap<String, Integer> userFrequency;
     ArrayList<String> ipAddressesList;
+    HashSet<String> referers;
     private long userSuccessActions;
     private long userIssues;
-    private final int successCode = 200;
-    private final int badRequestCode = 400;
-    private final int notFoundCode = 404;
 
     public Statistics() {
         this.totalTraffic = 0;
@@ -30,37 +30,61 @@ public class Statistics {
         this.oSLoggingFrequency = new HashMap<>();
         this.browserLoggingFrequency = new HashMap<>();
         this.ipAddressesList = new ArrayList<>();
+        this.loggingFrequency = new HashMap<>();
+        this.referers = new HashSet<>();
+        this.userFrequency = new HashMap<>();
     }
 
     public void addEntry(LogEntry logEntry) {
-        UserAgent userAgent = new UserAgent(logEntry.getUserAgent());
+        int successCode = 200;
+        int badRequestCode = 400;
+        int notFoundCode = 404;
+
         String userAgentString = logEntry.getUserAgent();
+        UserAgent userAgent = new UserAgent(userAgentString);
+        LocalDateTime timeStamp = logEntry.getTimeStamp();
+        String ipAddress = logEntry.getIpAddress();
+        int responseCode = logEntry.getResponseCode();
+        String referer = logEntry.getReferer();
 
         totalTraffic += logEntry.getDataSize();
 
-        if (logEntry.getTimeStamp().isBefore(minTime)) {
-            minTime = logEntry.getTimeStamp();
+        if (timeStamp.isBefore(minTime)) {
+            minTime = timeStamp;
         }
 
-        if (logEntry.getTimeStamp().isAfter(maxTime)) {
-            maxTime = logEntry.getTimeStamp();
+        if (timeStamp.isAfter(maxTime)) {
+            maxTime = timeStamp;
         }
 
-        if (!isBotRequest(logEntry.getUserAgent())) {
-            ipAddressesList.add(logEntry.getIpAddress());
+        if (!userAgent.isBotRequest(userAgentString)) {
+            ipAddressesList.add(ipAddress);
+
+            if (loggingFrequency.containsKey(timeStamp)) {
+                loggingFrequency.replace(timeStamp, loggingFrequency.get(timeStamp) + 1);
+            } else {
+                loggingFrequency.put(timeStamp, 1);
+            }
+
+            if (userFrequency.containsKey(ipAddress)) {
+                userFrequency.replace(ipAddress, userFrequency.get(ipAddress) + 1);
+            } else {
+                userFrequency.put(ipAddress, 1);
+            }
+
             userSuccessActions++;
         }
 
-        if (logEntry.getResponseCode() >= badRequestCode) {
+        if (responseCode >= badRequestCode) {
             userIssues++;
         }
 
-        if (logEntry.getResponseCode() == successCode) {
-            existingPageLinks.add(logEntry.getReferer());
+        if (responseCode == successCode) {
+            existingPageLinks.add(referer);
         }
 
-        if (logEntry.getResponseCode() == notFoundCode) {
-            nonExistingPageLinks.add(logEntry.getReferer());
+        if (responseCode == notFoundCode) {
+            nonExistingPageLinks.add(referer);
         }
 
         String oSName = userAgent.getOsName(userAgentString);
@@ -81,6 +105,10 @@ public class Statistics {
             } else {
                 browserLoggingFrequency.put(browserName, 1);
             }
+        }
+
+        if (referer != null && getHostName(referer) != null) {
+            referers.add(getHostName(referer));
         }
     }
 
@@ -108,18 +136,6 @@ public class Statistics {
         browserLoggingFrequency.forEach((key, value) -> loggingBrowserFrequencyRate.put(key, value / count));
 
         return loggingBrowserFrequencyRate;
-    }
-
-    public boolean isBotRequest(String userAgentString) {
-        boolean isBotRequest = false;
-        String missingPropertyAttribute = "-";
-        String botAttribute = "bot";
-
-        if (!userAgentString.equals(missingPropertyAttribute) && userAgentString.contains(botAttribute)) {
-            isBotRequest = true;
-        }
-
-        return isBotRequest;
     }
 
     public double getAverageRequestsPerHour() {
@@ -159,5 +175,22 @@ public class Statistics {
         }
 
         return 0;
+    }
+
+    public String getHostName(String referer) {
+        String regExpression = "http(s)?://|www\\.|/.*";
+        return referer.replaceAll(regExpression, "");
+    }
+
+    public OptionalDouble getPeakRequestsPerHour() {
+        return loggingFrequency.values().stream().mapToDouble(t -> t).max();
+    }
+
+    public HashSet<String> getReferals() {
+        return referers;
+    }
+
+    public OptionalDouble getMaximumUniqueUserAttendanceRate() {
+        return userFrequency.values().stream().mapToDouble(t -> t).max();
     }
 }
